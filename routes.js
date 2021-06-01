@@ -20,8 +20,27 @@ const routes = {
     }
   },
   tag_ss_prod: async (prodData) => {
-    console.log('product tag data')
-    console.log(prodData)
+    const mainTag = [ { tagId: 61635, name: 'MAIN_SORTLY' } ];
+    prodData.tags = mainTag
+    JSON.stringify(prodData)
+
+    const config = {
+      method: 'put',
+      url: `https://ssapi.shipstation.com/products/${prodData.productId}`,
+      headers: { 
+        'Authorization': `Basic ${process.env.SS_ENCODED}`,
+        'Content-Type': 'application/json'
+      },
+      data : prodData
+    };
+    
+    axios(config)
+    .then(function (response) {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
   }
 };
 

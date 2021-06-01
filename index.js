@@ -6,19 +6,22 @@ const routes = require('./routes');
 app.use(express.json());
 
 app.get('/ss_get_prod/:prod_id?', async (req, res) => {
-  let tagged = false
+  let tagged = false;
+  const mainTag = 61635;
   const resp = await routes.get_ss_prod(req.params.prod_id);
-  resp.products.forEach(product => {
-    product.tags.forEach(tag => {
-      if (tag.name === 'MAIN_SORTLY') {
-        tagged = true;
+  let prod_list = resp.products;
+  for (i = 0; i < prod_list.length; i++) {
+    if (prod_list[i].tags) {
+      if (prod_list[i].tags[0].tagId === mainTag) {
+        tagged = i;
+        console.log('tagged');
       }
-    });
-  });
-  if (!tagged) {
-    routes.tag_ss_prod(resp.products[0])
+    }
+  };
+  if (tagged === false) {
+    routes.tag_ss_prod(prod_list[0]);
   } else {
-    console.log('tagged')
+    console.log('run changes here');
   }
 });
 
