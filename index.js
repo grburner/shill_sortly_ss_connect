@@ -8,7 +8,7 @@ app.use(express.json());
 app.get('/ss_get_prod/:prod_id?', async (req, res) => {
   let tagged = false;
   const mainTag = 61635;
-  const resp = await routes.get_ss_prod(req.params.prod_id);
+  const resp = await routes.getSsProd(req.params.prod_id);
   let prod_list = resp.products;
   for (i = 0; i < prod_list.length; i++) {
     if (prod_list[i].tags) {
@@ -19,10 +19,14 @@ app.get('/ss_get_prod/:prod_id?', async (req, res) => {
     }
   };
   if (tagged === false) {
-    routes.tag_ss_prod(prod_list[0]);
+    routes.tagSsProd(prod_list[0]);
   } else {
     console.log('run changes here');
   }
+});
+
+app.get('/pull_sortly', async (req, res) => {
+  const resp = await routes.pullSortlyData();
 });
 
 let port = process.env.PORT;
