@@ -1,6 +1,6 @@
 require('dotenv').config();
-const orgFunction = require('./orgFunctions')
 const axios = require('axios');
+const { getBinNumber, addInvData, formatSsProduct } = require('./orgFunctions')
 
 const routes = {
   getSsProd: async function(prodID) {
@@ -71,40 +71,44 @@ const routes = {
           sku: product.notes, 
           quantity: product.quantity,
           price: product.price,
-          warehouse: orgFunction.getBinNumber(product.custom_attribute_values)
+          name: product.name,
+          warehouse: getBinNumber(product.custom_attribute_values)
         };
         this.updateSsProduct(buildObj)
+        addInvData(buildObj)
       })
     } catch (error) {
       console.log(error);
     }
   },
-  updateSsProduct: async function(product) {
-    console.log(`into update SS product: ${product.sku}`)
-    const SsData = await this.getSsProd(product.sku);
-    SsData.products[0].quantity = product.quantity;
-    SsData.products[0].price = parseFloat(product.price);
-    SsData.products[0].warehouseLocation = product.warehouse
+  testLog: function() {
+    console.log('TEST FUNCTION')
+  },
+  updateSsProduct: async function(sortlyData) {
+    const ssData = await routes.getSsProd(sortlyData.sku);
 
-    console.log(SsData.products[0])
-
-    const config = {
-      method: 'put',
-      url: `https://ssapi.shipstation.com/products/${SsData.products[0].productId}`,
-      headers: { 
-        'Authorization': `Basic ${process.env.SS_ENCODED}`,
-        'Content-Type': 'application/json'
-      },
-      data: SsData.products[0]
-    };
-
-    axios(config)
-    .then(resp => {
-      console.log(resp.data)
-    })
-    .catch(error => {
+    try {
+      let data = await formatSsProduct(ssData, sortlyData)
+      const config = {
+        method: 'put',
+        url: `https://ssapi.shipstation.com/products/${data.productId}`,
+        headers: { 
+          'Authorization': `Basic ${process.env.SS_ENCODED}`,
+          'Content-Type': 'application/json'
+        },
+        data: data
+      };
+  
+      axios(config)
+      .then(resp => {
+        console.log(resp.data)
+      })
+      .catch(error => {
+        console.log(error)
+      })
+    } catch {
       console.log(error)
-    })
+    }
   }
 }
 
