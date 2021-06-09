@@ -1,6 +1,6 @@
 require('dotenv').config();
 const axios = require('axios');
-const { getBinNumber, addInvData, formatSsProduct } = require('./orgFunctions')
+const { getBinNumber, addSsInvData, formatSsProduct, addSsProductData } = require('./orgFunctions')
 
 const routes = {
   getSsProd: async function(prodID) {
@@ -13,6 +13,7 @@ const routes = {
     };
     
     const result = await axios(config)
+    console.log(result.data)
 
     try {
       return result.data;
@@ -75,28 +76,29 @@ const routes = {
           warehouse: getBinNumber(product.custom_attribute_values)
         };
         this.updateSsProduct(buildObj)
-        addInvData(buildObj)
+        addSsInvData(buildObj)
       })
     } catch (error) {
       console.log(error);
     }
   },
-  testLog: function() {
-    console.log('TEST FUNCTION')
-  },
   updateSsProduct: async function(sortlyData) {
     const ssData = await routes.getSsProd(sortlyData.sku);
 
     try {
-      let data = await formatSsProduct(ssData, sortlyData)
-      const config = {
-        method: 'put',
-        url: `https://ssapi.shipstation.com/products/${data.productId}`,
-        headers: { 
-          'Authorization': `Basic ${process.env.SS_ENCODED}`,
-          'Content-Type': 'application/json'
-        },
-        data: data
+      if (ssData.data.products.length === 0) {
+        addSsProductData(sortlyData)
+      } else {
+        let data = await formatSsProduct(ssData, sortlyData)
+        const config = {
+          method: 'put',
+          url: `https://ssapi.shipstation.com/products/${data.productId}`,
+          headers: { 
+            'Authorization': `Basic ${process.env.SS_ENCODED}`,
+            'Content-Type': 'application/json'
+          },
+          data: data
+        }
       };
   
       axios(config)
@@ -106,7 +108,7 @@ const routes = {
       .catch(error => {
         console.log(error)
       })
-    } catch {
+    } catch (error) {
       console.log(error)
     }
   }

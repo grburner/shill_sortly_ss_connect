@@ -10,8 +10,12 @@ const orgFunctions = {
     })
     return retVal;
   },
-  addInvData: function(obj) {
-    console.log(`ADD TO SHEET: sku: ${obj.sku}, name: ${obj.name}, stock: ${obj.quantity}`)
+  addSsInvData: function(obj) {
+    console.log(`ADD TO INVENTORY SHEET: sku: ${obj.sku}, name: ${obj.name}, stock: ${obj.quantity}`)
+  },
+  addSsProductData: function(obj) {
+    console.log(`ADD TO PRODUCT SHEET`)
+    console.log(obj)
   },
   formatSsProduct: async function(ss, sortly) {
     console.log(`into update SS product: ${sortly.sku}`)

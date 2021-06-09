@@ -25,6 +25,11 @@ app.get('/ss_get_prod/:prod_id?', async (req, res) => {
   }
 });
 
+app.get('/ss_prod/:prod_id?', async (req, res) => {
+  const resp = await routes.getSsProd(req.params.prod_id);
+  res.send(resp)
+})
+
 app.get('/pull_sortly', async (req, res) => {
   const resp = await routes.pullSortlyData();
 });
