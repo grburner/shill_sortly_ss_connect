@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 
 const routes = require('./routes');
+const dataRoutes = require('./dataRoutes')
 
 app.use(express.json());
 
@@ -31,7 +32,7 @@ app.get('/ss_prod/:prod_id?', async (req, res) => {
 })
 
 app.get('/pull_sortly', async (req, res) => {
-  const resp = await routes.pullSortlyData();
+  const resp = await dataRoutes.pullSortlyData();
 });
 
 let port = process.env.PORT;

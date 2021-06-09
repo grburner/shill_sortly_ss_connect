@@ -1,6 +1,25 @@
 require('dotenv').config();
 const axios = require('axios');
-const { getBinNumber, addSsInvData, formatSsProduct, addSsProductData } = require('./orgFunctions')
+const { sortSortly, getBinNumber, addSsInvData, formatSsProduct, addSsProductData } = require('./orgFunctions')
+
+// async function getSsProd(prodID) {
+//   let config = {
+//     method: 'get',
+//     url: `https://ssapi.shipstation.com/products?sku=${prodID}`,
+//     headers: { 
+//       'Authorization': `Basic ${process.env.SS_ENCODED}`
+//     }
+//   };
+  
+//   const result = await axios(config)
+//   console.log(result.data)
+
+//   try {
+//     return result.data;
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }
 
 const routes = {
   getSsProd: async function(prodID) {
@@ -44,7 +63,10 @@ const routes = {
       console.log(error);
     }
   },
+
   pullSortlyData: async function() {
+    let prodsToUpdate = []
+
     const config = {
       method: 'get',
       url: 'https://api.sortly.co/api/v1/items/?include=custom_attributes&per_page=1000&page=1&',
@@ -58,7 +80,6 @@ const routes = {
     let data = result.data.data
 
     try {
-      let prodsToUpdate = []
       data.forEach(data => {
         data.tags.forEach(tag => {
           if (tag.name === 'Update') {
@@ -66,21 +87,23 @@ const routes = {
           }
         })
       });
-      prodsToUpdate.forEach(product => {
-        let buildObj = {
-          id: product.id,
-          sku: product.notes, 
-          quantity: product.quantity,
-          price: product.price,
-          name: product.name,
-          warehouse: getBinNumber(product.custom_attribute_values)
-        };
-        this.updateSsProduct(buildObj)
-        addSsInvData(buildObj)
-      })
+      // prodsToUpdate.forEach(product => {
+      //   let buildObj = {
+      //     id: product.id,
+      //     sku: product.notes, 
+      //     quantity: product.quantity,
+      //     price: product.price,
+      //     name: product.name,
+      //     warehouse: getBinNumber(product.custom_attribute_values)
+      //   };
+      //   this.updateSsProduct(buildObj)
+      //   addSsInvData(buildObj)
+      // })
     } catch (error) {
       console.log(error);
     }
+
+    sortSortly(prodsToUpdate);
   },
   updateSsProduct: async function(sortlyData) {
     const ssData = await routes.getSsProd(sortlyData.sku);
