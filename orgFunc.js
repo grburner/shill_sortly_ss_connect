@@ -8,51 +8,53 @@ const helpers = require('./helpers');
  */
 
 async function sortSortly(productList) {
-  let sortedList = []
+  let sortedList = [];
 
-  productList.forEach(async product => {
-    if (product.notes === null) {
-      sortedList.push({
-        nextFunc: 'noSKUNumber',
-        params: {
-          id: product.id,
-          name: product.name,
-          notes: 'NULL'
-        }
-      });
-    } else {
-      const ssProdData = await dataRoutes.getSsProd(product.notes)  
-      try {
-        if (ssProdData.products.length === 0) {
-          sortedList.push({
-            nextFunc: 'addSsProduct',
-            params: {
-              sku: product.notes,
-              name: product.name,
-              location: helpers.getBinNumber(product.custom_attribute_values)
+  productList.forEach((product) => {
+    sortedList.push(new Promise((res, rej) => {
+      if (product.notes === null) {
+        res({
+          nextFunc: 'noSKUNumber',
+          params: {
+            id: product.id,
+            name: product.name,
+            notes: 'NULL',
+          },
+        });
+      } else {
+        const ssProdData = dataRoutes.getSsProd(product.notes);
+        ssProdData.then(result => {
+          try {
+            if (result.products.length === 0) {
+              res({
+                nextFunc: 'addSsProduct',
+                params: {
+                  sku: product.notes,
+                  name: product.name,
+                  location: helpers.getBinNumber(product.custom_attribute_values),
+                },
+              });
+            } else {
+              res({
+                nextFunc: 'runSsUpdates',
+                params: {
+                  sku: product.notes,
+                  name: product.name,
+                  location: helpers.getBinNumber(product.custom_attribute_values),
+                  ssObj: ssProdData,
+                },
+              });
             }
-          })
-        } else {
-          sortedList.push({
-            nextFunc: 'runSsUpdates',
-            params: {
-              sku: product.notes,
-              name: product.name,
-              location: helpers.getBinNumber(product.custom_attribute_values),
-              ssObj: ssProdData
-            }
-          })
-        }
-      } catch (error) {
-        console.log(error)
+          } catch (error) {
+            rej(console.log(error));
+          }
+        })
       }
-    };
+    }));
   });
-  await Promise.all(sortedList)
-    .then((final) => {console.log(final)})
-  // setTimeout(() => {console.log(sortedList)}, 10000)
-  // console.log(sortedList);
-  return sortedList;
-};
+  Promise.all(sortedList)
+    .then(values => {console.log(values)})
+    .then(retVal => {return retVal})
+}
 
 exports.sortSortly = sortSortly;

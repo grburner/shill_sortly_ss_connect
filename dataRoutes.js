@@ -41,8 +41,8 @@ async function pullSortlyData() {
   } catch (error) {
     console.log(error);
   }
-  // console.log(prodsToUpdate)
-  orgFunc.sortSortly(prodsToUpdate);
+  // await issue here
+  orgFunc.sortSortly(prodsToUpdate).then(result => {console.log(result)});
 }
 
 async function getSsProd(prodID) {
