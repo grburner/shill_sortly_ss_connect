@@ -12,6 +12,7 @@ async function sortSortly(productList) {
 
   productList.forEach((product) => {
     sortedList.push(new Promise((res, rej) => {
+      // no notes(SKU number) in Sortly, create entry in sortlySKU
       if (product.notes === null) {
         res({
           nextFunc: 'noSKUNumber',
@@ -29,13 +30,12 @@ async function sortSortly(productList) {
               res({
                 nextFunc: 'addSsProduct',
                 params: {
-                  sku: product.notes,
-                  name: product.name,
-                  location: helpers.getBinNumber(product.custom_attribute_values),
+                  SKU: product.notes,
+                  Name: product.name,
+                  WarehouseLocation: helpers.getBinNumber(product.custom_attribute_values),
                 },
               });
             } else {
-              console.log(result.products)
               res({
                 nextFunc: 'runSsUpdates',
                 params: {
@@ -63,14 +63,12 @@ function routeSortly(obj) {
       case 'runSsUpdates':
         dataRoutes.updateSsProduct(item)
         break;
-      // case 'noSKUNumber':
-      //   console.log('run noSKUnumber');
-      //   console.log(item);
-      //   break;
-      // case 'addSsProduct':
-      //   console.log('add SsProduct');
-      //   console.log(item);
-      //   break;
+      case 'noSKUNumber':
+        helpers.addSortlySKU(item)
+        break;
+      case 'addSsProduct':
+        helpers.addProductAdd(item)
+        break;
       default:
         console.log('no match');
     }
