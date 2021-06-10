@@ -57,24 +57,39 @@ async function sortSortly(productList) {
   });
   Promise.all(sortedList)
     .then(retVal => routeSortly(retVal))
+    .then(ret => console.log(ret))
 }
 
 function routeSortly(obj) {
-  obj.forEach(item => {
-    switch(item.nextFunc) {
-      case 'runSsUpdates':
-        helpers.addInventorySKU(item)
-        dataRoutes.updateSsProduct(item)
-        break;
-      case 'noSKUNumber':
-        helpers.addSortlySKU(item)
-        break;
-      case 'addSsProduct':
-        helpers.addProductAdd(item)
-        break;
-      default:
-        console.log('no match');
-    }
+  return new Promise((res, rej) => {
+    let promises = []
+  
+    obj.forEach(item => {
+      switch(item.nextFunc) {
+        case 'runSsUpdates':
+          promises.push(
+            helpers.addInventorySKU(item)
+          );
+          promises.push(
+            dataRoutes.updateSsProduct(item)
+          );
+          break;
+        case 'noSKUNumber':
+          promises.push(
+            helpers.addSortlySKU(item)
+          );
+          break;
+        case 'addSsProduct':
+          promises.push(
+            helpers.addProductAdd(item)
+          );
+          break;
+        default:
+          console.log('no match');
+      }
+    })
+    Promise.all(promises)
+      .then(() => res(promises));
   })
 };
 
