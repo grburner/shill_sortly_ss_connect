@@ -74,8 +74,25 @@ function updateSsProduct(obj) {
   })
 }
 
+function removeUpdateTag(product) {
+  let indexTagNames = product.tag_names.indexOf('Update');
+
+  if (indexTagNames > -1) {
+    product.tag_names.splice(indexTagNames, 1)
+  }
+  product.tags.forEach((tag, index) => {
+    console.log(Object.values(tag)[0])
+    console.log('Update')
+    if (Object.values(tag)[0] === 'Update') {
+      product.tags.splice(index, 1)
+    }
+  });
+  console.log(product)
+}
+
 
 
 exports.pullSortlyData = pullSortlyData;
 exports.getSsProd = getSsProd;
 exports.updateSsProduct = updateSsProduct;
+exports.removeUpdateTag = removeUpdateTag;

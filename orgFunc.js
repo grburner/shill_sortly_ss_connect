@@ -11,6 +11,7 @@ async function sortSortly(productList) {
   let sortedList = [];
 
   productList.forEach((product) => {
+    dataRoutes.removeUpdateTag(product)
     sortedList.push(new Promise((res, rej) => {
       // no notes(SKU number) in Sortly, create entry in sortlySKU
       if (product.notes === null) {
