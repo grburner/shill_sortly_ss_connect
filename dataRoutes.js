@@ -87,7 +87,24 @@ function removeUpdateTag(product) {
       product.tags.splice(index, 1)
     }
   });
-  console.log(product)
+
+  const config = {
+    method: 'put',
+    url: `https://api.sortly.co/api/v1/items/${product.id}`,
+    headers: {
+      'Authorization': `Bearer ${process.env.SORTLY_SECRET}`,
+      'Content-Type': 'application/json'
+    },
+    data: JSON.stringify(product)
+  }
+  
+  axios(config)
+  .then(resp => {
+    console.log(`tag removed from sortly product id: ${product.id}`)
+  })
+  .catch(error => {
+    console.log(error)
+  })
 }
 
 
