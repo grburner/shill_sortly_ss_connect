@@ -105,36 +105,36 @@ const routes = {
 
     sortSortly(prodsToUpdate);
   },
-  updateSsProduct: async function(sortlyData) {
-    const ssData = await routes.getSsProd(sortlyData.sku);
+  // updateSsProduct: async function(sortlyData) {
+  //   const ssData = await routes.getSsProd(sortlyData.sku);
 
-    try {
-      if (ssData.data.products.length === 0) {
-        addSsProductData(sortlyData)
-      } else {
-        let data = await formatSsProduct(ssData, sortlyData)
-        const config = {
-          method: 'put',
-          url: `https://ssapi.shipstation.com/products/${data.productId}`,
-          headers: { 
-            'Authorization': `Basic ${process.env.SS_ENCODED}`,
-            'Content-Type': 'application/json'
-          },
-          data: data
-        }
-      };
+  //   try {
+  //     if (ssData.data.products.length === 0) {
+  //       addSsProductData(sortlyData)
+  //     } else {
+  //       let data = await formatSsProduct(ssData, sortlyData)
+  //       const config = {
+  //         method: 'put',
+  //         url: `https://ssapi.shipstation.com/products/${data.productId}`,
+  //         headers: { 
+  //           'Authorization': `Basic ${process.env.SS_ENCODED}`,
+  //           'Content-Type': 'application/json'
+  //         },
+  //         data: data
+  //       }
+  //     };
   
-      axios(config)
-      .then(resp => {
-        console.log(resp.data)
-      })
-      .catch(error => {
-        console.log(error)
-      })
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  //     axios(config)
+  //     .then(resp => {
+  //       console.log(resp.data)
+  //     })
+  //     .catch(error => {
+  //       console.log(error)
+  //     })
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
 }
 
 module.exports = routes;

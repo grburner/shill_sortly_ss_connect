@@ -3,8 +3,8 @@ const helpers = require('./helpers');
 
 /**
  * description here
- * @param {array} productList - array of sortly objectss
- * @returns {array} sortedList - array of objects with next steps and paramaters
+ * @param {array} productList - array of sortly objects
+ * @returns {function} routeSortly - calls routeSortly after all products are categorized
  */
 
 async function sortSortly(productList) {
@@ -35,13 +35,14 @@ async function sortSortly(productList) {
                 },
               });
             } else {
+              console.log(result.products)
               res({
                 nextFunc: 'runSsUpdates',
                 params: {
                   sku: product.notes,
                   name: product.name,
                   location: helpers.getBinNumber(product.custom_attribute_values),
-                  ssObj: ssProdData,
+                  ssObj: result.products,
                 },
               });
             }
@@ -53,8 +54,27 @@ async function sortSortly(productList) {
     }));
   });
   Promise.all(sortedList)
-    .then(values => {console.log(values)})
-    .then(retVal => {return retVal})
+    .then(retVal => routeSortly(retVal))
 }
+
+function routeSortly(obj) {
+  obj.forEach(item => {
+    switch(item.nextFunc) {
+      case 'runSsUpdates':
+        dataRoutes.updateSsProduct(item)
+        break;
+      // case 'noSKUNumber':
+      //   console.log('run noSKUnumber');
+      //   console.log(item);
+      //   break;
+      // case 'addSsProduct':
+      //   console.log('add SsProduct');
+      //   console.log(item);
+      //   break;
+      default:
+        console.log('no match');
+    }
+  })
+};
 
 exports.sortSortly = sortSortly;

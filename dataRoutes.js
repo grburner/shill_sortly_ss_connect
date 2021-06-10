@@ -26,23 +26,10 @@ async function pullSortlyData() {
         }
       })
     });
-    // prodsToUpdate.forEach(product => {
-    //   let buildObj = {
-    //     id: product.id,
-    //     sku: product.notes, 
-    //     quantity: product.quantity,
-    //     price: product.price,
-    //     name: product.name,
-    //     warehouse: getBinNumber(product.custom_attribute_values)
-    //   };
-    //   this.updateSsProduct(buildObj)
-    //   addSsInvData(buildObj)
-    // })
   } catch (error) {
     console.log(error);
   }
-  // await issue here
-  orgFunc.sortSortly(prodsToUpdate).then(result => {console.log(result)});
+  orgFunc.sortSortly(prodsToUpdate);
 }
 
 async function getSsProd(prodID) {
@@ -63,7 +50,32 @@ async function getSsProd(prodID) {
   }
 }
 
+function updateSsProduct(obj) {
+  let data = obj.params.ssObj[0];
+  data.sku = obj.params.sku;
+  data.name = obj.params.name;
+  data.warehouseLocation = obj.params.location
+
+  const config = {
+    method: 'put',
+    url: `https://ssapi.shipstation.com/products/${data.productId}`,
+    headers: { 
+      'Authorization': `Basic ${process.env.SS_ENCODED}`,
+      'Content-Type': 'application/json'
+    },
+    data: data
+  }
+  axios(config)
+  .then(resp => {
+    console.log(resp.data)
+  })
+  .catch(error => {
+    console.log(error)
+  })
+}
+
 
 
 exports.pullSortlyData = pullSortlyData;
 exports.getSsProd = getSsProd;
+exports.updateSsProduct = updateSsProduct;

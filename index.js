@@ -15,14 +15,14 @@ app.get('/ss_get_prod/:prod_id?', async (req, res) => {
     if (prod_list[i].tags) {
       if (prod_list[i].tags[0].tagId === mainTag) {
         tagged = i;
-        console.log('tagged');
+        // console.log('tagged');
       }
     }
   };
   if (tagged === false) {
     routes.tagSsProd(prod_list[0]);
   } else {
-    console.log('run changes here');
+    // console.log('run changes here');
   }
 });
 
