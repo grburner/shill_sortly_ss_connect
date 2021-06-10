@@ -52,9 +52,9 @@ async function getSsProd(prodID) {
 
 function updateSsProduct(obj) {
   let data = obj.params.ssObj[0];
-  data.sku = obj.params.sku;
-  data.name = obj.params.name;
-  data.warehouseLocation = obj.params.location
+  data.sku = obj.params.SKU;
+  data.name = obj.params.ProductName;
+  data.warehouseLocation = obj.params.Loc1
 
   const config = {
     method: 'put',

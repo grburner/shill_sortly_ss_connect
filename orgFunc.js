@@ -40,9 +40,10 @@ async function sortSortly(productList) {
               res({
                 nextFunc: 'runSsUpdates',
                 params: {
-                  sku: product.notes,
-                  name: product.name,
-                  location: helpers.getBinNumber(product.custom_attribute_values),
+                  SKU: product.notes,
+                  ProductName: product.name,
+                  Stock: product.quantity,
+                  Loc1: helpers.getBinNumber(product.custom_attribute_values),
                   ssObj: result.products,
                 },
               });
@@ -62,6 +63,7 @@ function routeSortly(obj) {
   obj.forEach(item => {
     switch(item.nextFunc) {
       case 'runSsUpdates':
+        helpers.addInventorySKU(item)
         dataRoutes.updateSsProduct(item)
         break;
       case 'noSKUNumber':

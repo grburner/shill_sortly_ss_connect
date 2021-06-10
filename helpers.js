@@ -39,6 +39,33 @@ function addProductAdd(product) {
   });
 }
 
+function addInventorySKU(product) {
+  let newString = [];
+  const formattedHeader = ['SKU','ProductName','Loc1','Loc2','Loc3','Loc4','Stock','ReorderThreshold','Cost'];
+  let prodObj = product.params;
+
+  fs.readFile('./logs/productInv.csv', (err, data) => {
+    if (err) throw err;
+    else {
+      formattedHeader.forEach(heading => {
+        if (Object.keys(prodObj).indexOf(heading) !== -1) {
+          Object.entries(prodObj).forEach(entry => {
+            if (entry[0] === heading) {
+              newString += `${entry[1]},`
+            }
+          });
+        }
+        else { newString += ','}
+      });
+      newString += '\n'
+    }
+    fs.appendFile('./logs/productInv.csv', newString, (err,data) => {
+      if (err) throw err;
+      console.log('inventory record added')
+    });
+  })
+}
+
 function addSortlySKU(entry) {
   let dataToWrite = `${entry.params.id}, ${entry.params.name}, NO SKU`
   fs.writeFile('./logs/sortlySKU.csv', dataToWrite, 'utf8', (err) => {
@@ -50,3 +77,4 @@ function addSortlySKU(entry) {
 exports.getBinNumber = getBinNumber;
 exports.addProductAdd = addProductAdd;
 exports.addSortlySKU = addSortlySKU;
+exports.addInventorySKU = addInventorySKU;
