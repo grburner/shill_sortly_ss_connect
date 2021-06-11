@@ -59,7 +59,6 @@ async function sortSortly(productList) {
     Promise.all(sortedList)
       .then(retVal => routeSortly(retVal))
       .then(() => {
-        console.log('got to resolve in orgFunc.sortSortly'),
         res(true)})
       .catch(err => {
         console.log(err),

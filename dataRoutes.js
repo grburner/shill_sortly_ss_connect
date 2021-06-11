@@ -33,7 +33,6 @@ function pullSortlyData() {
     orgFunc.sortSortly(prodsToUpdate)
       .then(resp => {
         if (resp) {
-          console.log('got to response in pullSortlyData' + resp);
           res(true)
         };
       })
