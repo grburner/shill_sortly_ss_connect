@@ -3,33 +3,41 @@ const axios = require('axios');
 
 const orgFunc = require('./orgFunc');
 
-async function pullSortlyData() {
-  let prodsToUpdate = []
-
-  const config = {
-    method: 'get',
-    url: 'https://api.sortly.co/api/v1/items/?include=custom_attributes&per_page=1000&page=1&',
-    headers: { 
-      'Authorization': `Bearer ${process.env.SORTLY_SECRET}`
+function pullSortlyData() {
+  return new Promise(async (res, rej) => {
+    let prodsToUpdate = []
+  
+    const config = {
+      method: 'get',
+      url: 'https://api.sortly.co/api/v1/items/?include=custom_attributes&per_page=1000&page=1&',
+      headers: { 
+        'Authorization': `Bearer ${process.env.SORTLY_SECRET}`
+      }
+    };
+  
+    const result = await axios(config);
+  
+    let data = result.data.data
+  
+    try {
+      data.forEach(data => {
+        data.tags.forEach(tag => {
+          if (tag.name === 'Update') {
+            prodsToUpdate.push(data)
+          }
+        })
+      });
+    } catch (error) {
+      console.log(error);
     }
-  };
-
-  const result = await axios(config);
-
-  let data = result.data.data
-
-  try {
-    data.forEach(data => {
-      data.tags.forEach(tag => {
-        if (tag.name === 'Update') {
-          prodsToUpdate.push(data)
-        }
+    orgFunc.sortSortly(prodsToUpdate)
+      .then(resp => {
+        if (resp) {
+          console.log('got to response in pullSortlyData' + resp);
+          res(true)
+        };
       })
-    });
-  } catch (error) {
-    console.log(error);
-  }
-  orgFunc.sortSortly(prodsToUpdate);
+  })
 }
 
 async function getSsProd(prodID) {

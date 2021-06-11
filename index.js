@@ -31,8 +31,13 @@ app.get('/ss_prod/:prod_id?', async (req, res) => {
   res.send(resp)
 })
 
-app.get('/pull_sortly', async (req, res) => {
-  const resp = await dataRoutes.pullSortlyData();
+app.get('/pull_sortly', (req, res) => {
+  dataRoutes.pullSortlyData()
+    .then(resp => {
+      if (resp) {
+        res.download('./logs/productAdds.csv')
+      }
+    });
 });
 
 let port = process.env.PORT;

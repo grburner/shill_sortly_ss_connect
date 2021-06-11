@@ -8,56 +8,64 @@ const helpers = require('./helpers');
  */
 
 async function sortSortly(productList) {
-  let sortedList = [];
-
-  productList.forEach((product) => {
-    dataRoutes.removeUpdateTag(product)
-    sortedList.push(new Promise((res, rej) => {
-      // no notes(SKU number) in Sortly, create entry in sortlySKU
-      if (product.notes === null) {
-        res({
-          nextFunc: 'noSKUNumber',
-          params: {
-            id: product.id,
-            name: product.name,
-            notes: 'NULL',
-          },
-        });
-      } else {
-        const ssProdData = dataRoutes.getSsProd(product.notes);
-        ssProdData.then(result => {
-          try {
-            if (result.products.length === 0) {
-              res({
-                nextFunc: 'addSsProduct',
-                params: {
-                  SKU: product.notes,
-                  Name: product.name,
-                  WarehouseLocation: helpers.getBinNumber(product.custom_attribute_values),
-                },
-              });
-            } else {
-              res({
-                nextFunc: 'runSsUpdates',
-                params: {
-                  SKU: product.notes,
-                  ProductName: product.name,
-                  Stock: product.quantity,
-                  Loc1: helpers.getBinNumber(product.custom_attribute_values),
-                  ssObj: result.products,
-                },
-              });
+  return new Promise((res, rej) => {
+    let sortedList = [];
+  
+    productList.forEach((product) => {
+      dataRoutes.removeUpdateTag(product)
+      sortedList.push(new Promise((res, rej) => {
+        // no notes(SKU number) in Sortly, create entry in sortlySKU
+        if (product.notes === null) {
+          res({
+            nextFunc: 'noSKUNumber',
+            params: {
+              id: product.id,
+              name: product.name,
+              notes: 'NULL',
+            },
+          });
+        } else {
+          const ssProdData = dataRoutes.getSsProd(product.notes);
+          ssProdData.then(result => {
+            try {
+              if (result.products.length === 0) {
+                res({
+                  nextFunc: 'addSsProduct',
+                  params: {
+                    SKU: product.notes,
+                    Name: product.name,
+                    WarehouseLocation: helpers.getBinNumber(product.custom_attribute_values),
+                  },
+                });
+              } else {
+                res({
+                  nextFunc: 'runSsUpdates',
+                  params: {
+                    SKU: product.notes,
+                    ProductName: product.name,
+                    Stock: product.quantity,
+                    Loc1: helpers.getBinNumber(product.custom_attribute_values),
+                    ssObj: result.products,
+                  },
+                });
+              }
+            } catch (error) {
+              rej(console.log(error));
             }
-          } catch (error) {
-            rej(console.log(error));
-          }
-        })
-      }
-    }));
-  });
-  Promise.all(sortedList)
-    .then(retVal => routeSortly(retVal))
-    .then(ret => console.log(ret))
+          })
+        }
+      }));
+    });
+    Promise.all(sortedList)
+      .then(retVal => routeSortly(retVal))
+      .then(() => {
+        console.log('got to resolve in orgFunc.sortSortly'),
+        res(true)})
+      .catch(err => {
+        console.log(err),
+        rej(err)
+      })
+  })
 }
 
 function routeSortly(obj) {
@@ -89,7 +97,10 @@ function routeSortly(obj) {
       }
     })
     Promise.all(promises)
-      .then(() => res(promises));
+      .then(() => {
+        console.log(promises),
+        res(promises)
+      });
   })
 };
 
