@@ -6,8 +6,6 @@ const readFile = util.promisify(fs.readFile);
 
 const AdmZip = require('adm-zip');
 const zip = new AdmZip();
-const zip2 = new AdmZip('./logs/testzip.zip');
-const zipEntries = zip2.getEntries();
 
 let rootPath = './logs/'
 
@@ -35,6 +33,8 @@ async function addToZip(filePath) {
 }
 
 function getZips(paths) {
+  const zip2 = new AdmZip('./logs/testzip.zip');
+  const zipEntries = zip2.getEntries();
   zipEntries.forEach(entry => {
     console.log(entry.entryName)
     if (paths.includes(entry.entryName)) {
@@ -43,16 +43,31 @@ function getZips(paths) {
   })
 }
 
-async function createZipFiles() {
-  let promises = [];
-  const roots = await zipFiles(rootPath);
-  roots.forEach(root => promises.push(addToZip(root)))
+// async function createZipFiles() {
+//   let promises = [];
+//   const roots = await zipFiles(rootPath);
+//   roots.forEach(root => promises.push(addToZip(root)))
 
-  Promise.all(promises)
+//   Promise.all(promises)
+//   .then(() => {
+//     zip.writeZip('./logs/testzip.zip');
+//     // getZips(roots)
+//   })
+// }
+
+function createZipFiles() {
+  return new Promise(async(res, rej) => {
+    let promises = [];
+    const roots = await zipFiles(rootPath);
+    roots.forEach(root => promises.push(addToZip(root)))
+  
+    Promise.all(promises)
     .then(() => {
       zip.writeZip('./logs/testzip.zip');
-      getZips(roots)
+      res('./logs/testzip.zip')
+      // getZips(roots)
     })
+  })
 }
 
-createZipFiles();
+exports.createZipFiles = createZipFiles;

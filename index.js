@@ -6,7 +6,8 @@ const AdmZip = require('adm-zip');
 const app = express();
 
 const routes = require('./routes');
-const dataRoutes = require('./dataRoutes')
+const dataRoutes = require('./dataRoutes');
+const zipFiles = require('./zipFiles');
 
 app.use(express.json());
 
@@ -37,42 +38,12 @@ app.get('/ss_prod/:prod_id?', async (req, res) => {
 
 app.get('/pull_sortly', (req, res) => {
   dataRoutes.pullSortlyData()
+  .then(() => {
+    zipFiles.createZipFiles()
     .then(resp => {
-      if (resp) {
-        res.download('./logs/testzip.zip')
-      }
-    });
-});
-
-app.get('/test_zip', (req, res) => {
-  const zip = new AdmZip();
-  let productAdds;
-  let productInv;
-
-  function addToZip() {
-    return new Promise((res, rej) => {
-      fs.readFile('./logs/productAdds.csv', (err, data) => {
-        if (err) throw err;
-        productAdds = data;
-        res(true)
-      })
+      res.download(`${resp}`)
     })
-  }
-  // fs.readFile('./logs/productInv.csv', (err, data) => {
-  //   if (err) throw err;
-  //   productInv = data;
-  // });
-
-  function addFileToZip() {
-    addToZip()
-    .then(() => zip.addFile('./logs/productAdds.csv', Buffer.alloc(productAdds.length, productAdds), 'enter productAdds'))
-    .then(() => {zip.writeZip('./logs/testzip.zip')})
-  }
-
-  addFileToZip();
-
-  // zip.addFile('./logs/productAdds.csv', Buffer.alloc(productAdds.length, productAdds), 'enter productAdds');
-  // zip.addFile('./logs/productInv.csv', Buffer.alloc(productInv.length, productInv), 'enter productInv')
+  });
 });
 
 let port = process.env.PORT;
