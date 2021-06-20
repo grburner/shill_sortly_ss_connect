@@ -90,32 +90,32 @@ function removeUpdateTag(product) {
   console.log('remove tag function')
   let indexTagNames = product.tag_names.indexOf('Update');
 
-  // if (indexTagNames > -1) {
-  //   product.tag_names.splice(indexTagNames, 1)
-  // }
-  // product.tags.forEach((tag, index) => {
-  //   if (Object.values(tag)[0] === 'Update') {
-  //     product.tags.splice(index, 1)
-  //   }
-  // });
+  if (indexTagNames > -1) {
+    product.tag_names.splice(indexTagNames, 1)
+  }
+  product.tags.forEach((tag, index) => {
+    if (Object.values(tag)[0] === 'Update') {
+      product.tags.splice(index, 1)
+    }
+  });
 
-  // const config = {
-  //   method: 'put',
-  //   url: `https://api.sortly.co/api/v1/items/${product.id}`,
-  //   headers: {
-  //     'Authorization': `Bearer ${process.env.SORTLY_SECRET}`,
-  //     'Content-Type': 'application/json'
-  //   },
-  //   data: JSON.stringify(product)
-  // }
+  const config = {
+    method: 'put',
+    url: `https://api.sortly.co/api/v1/items/${product.id}`,
+    headers: {
+      'Authorization': `Bearer ${process.env.SORTLY_SECRET}`,
+      'Content-Type': 'application/json'
+    },
+    data: JSON.stringify(product)
+  }
   
-  // axios(config)
-  // .then(resp => {
-  //   console.log(`tag removed from sortly product id: ${product.id}`)
-  // })
-  // .catch(error => {
-  //   console.log(error)
-  // })
+  axios(config)
+  .then(resp => {
+    console.log(`tag removed from sortly product id: ${product.id}`)
+  })
+  .catch(error => {
+    console.log(error)
+  })
 }
 
 
