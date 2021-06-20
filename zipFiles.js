@@ -43,18 +43,6 @@ function getZips(paths) {
   })
 }
 
-// async function createZipFiles() {
-//   let promises = [];
-//   const roots = await zipFiles(rootPath);
-//   roots.forEach(root => promises.push(addToZip(root)))
-
-//   Promise.all(promises)
-//   .then(() => {
-//     zip.writeZip('./logs/testzip.zip');
-//     // getZips(roots)
-//   })
-// }
-
 function createZipFiles() {
   return new Promise(async(res, rej) => {
     let promises = [];

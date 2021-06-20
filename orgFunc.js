@@ -35,6 +35,10 @@ async function sortSortly(productList) {
                     SKU: product.notes,
                     Name: product.name,
                     WarehouseLocation: helpers.getBinNumber(product.custom_attribute_values),
+                    ProductName: product.name,
+                    Stock: product.quantity,
+                    Loc1: helpers.getBinNumber(product.custom_attribute_values),
+                    ssObj: result.products,
                   },
                 });
               } else {
@@ -42,6 +46,8 @@ async function sortSortly(productList) {
                   nextFunc: 'runSsUpdates',
                   params: {
                     SKU: product.notes,
+                    Name: product.name,
+                    WarehouseLocation: helpers.getBinNumber(product.custom_attribute_values),
                     ProductName: product.name,
                     Stock: product.quantity,
                     Loc1: helpers.getBinNumber(product.custom_attribute_values),
@@ -72,13 +78,16 @@ function routeSortly(obj) {
     let promises = []
   
     obj.forEach(item => {
+      console.log(item.nextFunc)
       switch(item.nextFunc) {
         case 'runSsUpdates':
           promises.push(
             helpers.addInventorySKU(item)
           );
+          // change this to helpers.addProductAdd
           promises.push(
-            dataRoutes.updateSsProduct(item)
+            // dataRoutes.updateSsProduct(item)
+            helpers.addProductAdd(item)
           );
           break;
         case 'noSKUNumber':

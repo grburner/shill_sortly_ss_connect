@@ -1,6 +1,6 @@
 const fs = require('fs');
-const { format } = require('path');
 const { formatSsProduct } = require('./orgFunctions');
+const path = require('path');
 
 function getBinNumber(obj) {
   let retVal;
@@ -17,6 +17,8 @@ function addProductAdd(product) {
     let newString = [];
     let formattedHeader = ['SKU','Name','WarehouseLocation','WeightOz','Category','Tag1','Tag2','Tag3','Tag4','Tag5','CustomsDescription','CustomsValue','CustomsTariffNo','CustomsCountry','ThumbnailUrl','UPC','FillSKU','Length','Width','Height','UseProductName','Active','ParentSKU','IsReturnable']
     let prodObj = product.params;
+    console.log(Object.keys(prodObj))
+    console.log(Object.entries(prodObj))
   
     fs.readFile('./logs/productAdds.csv', (err, data) => {
       if (err) {rej(err)}
@@ -31,9 +33,8 @@ function addProductAdd(product) {
             })
           } else { newString += ','}
         });
-        newString += '\n'
       }
-      fs.appendFile('./logs/productAdds.csv', newString, (err,data) => {
+      fs.appendFile('./logs/productAdds.csv', '\n' + newString, (err,data) => {
         if (err) {rej(err)};
         res('addProductAdd complete')
       });
@@ -44,7 +45,7 @@ function addProductAdd(product) {
 function addInventorySKU(product) {
   return new Promise((res, rej) => {
     let newString = [];
-    const formattedHeader = ['SKU','ProductName','Loc1','Loc2','Loc3','Loc4','Stock','ReorderThreshold','Cost'];
+    const formattedHeader = ["SKU","ProductName","Loc1","Loc2","Loc3","Loc4","Stock","ReorderThreshold","Cost"];
     let prodObj = product.params;
   
     fs.readFile('./logs/productInv.csv', (err, data) => {
@@ -60,9 +61,8 @@ function addInventorySKU(product) {
           }
           else { newString += ','}
         });
-        newString += '\n'
       }
-      fs.appendFile('./logs/productInv.csv', newString, (err,data) => {
+      fs.appendFile('./logs/productInv.csv', '\n' + newString, (err,data) => {
         if (err) {rej(err)};
         console.log('inventory record added')
         res('addInventorySKU complete')
@@ -81,7 +81,44 @@ function addSortlySKU(entry) {
   })
 }
 
+function destroyFiles() {
+  console.log('running destroy files');
+  fs.readdir('./logs', (err, files) => {
+    if (err) throw err;
+    files.forEach(file => {
+      if (file != '.DS_store')
+        fs.unlink(path.join('./logs', file), err => {
+          if (err) throw err;
+        });
+    });
+  });
+};
+
+function remakeFiles() {
+  console.log('running remake files')
+  const productRow = ["SKU","Name","WarehouseLocation","WeightOz","Category","Tag1","Tag2","Tag3","Tag4","Tag5","CustomsDescription","CustomsValue","CustomsTariffNo","CustomsCountry","ThumbnailUrl","UPC","FillSKU","Length","Width","Height","UseProductName","Active","ParentSKU","IsReturnable"]
+  const invRow = ["SKU","ProductName","Loc1","Loc2","Loc3","Loc4","Stock","ReorderThreshold","Cost"]
+
+  fs.writeFileSync(`./logs/productAdds.csv`, productRow, (err) => {
+    if (err) throw err;
+  });
+
+  fs.writeFileSync(`./logs/productInv.csv`, invRow, (err) => {
+    if (err) throw err;
+  });
+
+  fs.writeFileSync(`./logs/sortlySKU.csv`, '',(err) => {
+    if (err) throw err;
+  });
+
+  fs.writeFileSync(`./logs/testzip.zip`, '',(err) => {
+    if (err) throw err;
+  });
+}
+
 exports.getBinNumber = getBinNumber;
 exports.addProductAdd = addProductAdd;
 exports.addSortlySKU = addSortlySKU;
 exports.addInventorySKU = addInventorySKU;
+exports.destroyFiles = destroyFiles;
+exports.remakeFiles = remakeFiles;

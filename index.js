@@ -8,6 +8,7 @@ const app = express();
 const routes = require('./routes');
 const dataRoutes = require('./dataRoutes');
 const zipFiles = require('./zipFiles');
+const helpers = require('./helpers');
 
 app.use(express.json());
 
@@ -42,6 +43,7 @@ app.get('/pull_sortly', (req, res) => {
     zipFiles.createZipFiles()
     .then(resp => {
       res.download(`${resp}`)
+      helpers.destroyFiles()
     })
   });
 });

@@ -1,9 +1,11 @@
 require('dotenv').config();
 const axios = require('axios');
+const helpers = require('./helpers');
 
 const orgFunc = require('./orgFunc');
 
 function pullSortlyData() {
+  helpers.remakeFiles()
   return new Promise(async (res, rej) => {
     let prodsToUpdate = []
   
@@ -21,6 +23,7 @@ function pullSortlyData() {
   
     try {
       data.forEach(data => {
+        console.log(data)
         data.tags.forEach(tag => {
           if (tag.name === 'Update') {
             prodsToUpdate.push(data)
@@ -85,14 +88,12 @@ function updateSsProduct(obj) {
 
 function removeUpdateTag(product) {
   console.log('remove tag function')
-  // let indexTagNames = product.tag_names.indexOf('Update');
+  let indexTagNames = product.tag_names.indexOf('Update');
 
   // if (indexTagNames > -1) {
   //   product.tag_names.splice(indexTagNames, 1)
   // }
   // product.tags.forEach((tag, index) => {
-  //   console.log(Object.values(tag)[0])
-  //   console.log('Update')
   //   if (Object.values(tag)[0] === 'Update') {
   //     product.tags.splice(index, 1)
   //   }
