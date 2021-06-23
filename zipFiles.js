@@ -36,9 +36,9 @@ function getZips(paths) {
   const zip2 = new AdmZip('./logs/testzip.zip');
   const zipEntries = zip2.getEntries();
   zipEntries.forEach(entry => {
-    console.log(entry.entryName)
+    // console.log(entry.entryName)
     if (paths.includes(entry.entryName)) {
-      console.log(entry.getData().toString('utf8'))
+      // console.log(entry.getData().toString('utf8'))
     }
   })
 }

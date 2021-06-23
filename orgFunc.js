@@ -78,7 +78,6 @@ function routeSortly(obj) {
     let promises = []
   
     obj.forEach(item => {
-      console.log(item.nextFunc)
       switch(item.nextFunc) {
         case 'runSsUpdates':
           promises.push(
@@ -101,12 +100,11 @@ function routeSortly(obj) {
           );
           break;
         default:
-          console.log('no match');
+          // console.log('no match');  
       }
     })
     Promise.all(promises)
       .then(() => {
-        console.log(promises),
         res(promises)
       });
   })

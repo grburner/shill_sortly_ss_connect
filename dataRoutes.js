@@ -23,7 +23,6 @@ function pullSortlyData() {
   
     try {
       data.forEach(data => {
-        console.log(data)
         data.tags.forEach(tag => {
           if (tag.name === 'Update') {
             prodsToUpdate.push(data)
@@ -31,13 +30,18 @@ function pullSortlyData() {
         })
       });
     } catch (error) {
-      console.log(error);
+      console.log('fail', 1, 'dataRoutes.js - pullSortlyData()', error);
+      rej(error)
     }
     orgFunc.sortSortly(prodsToUpdate)
       .then(resp => {
         if (resp) {
           res(true)
         };
+      })
+      .catch(error => {
+        console.log('fail', 1, 'dataRoutes.js - pullSortlyData()', error);
+        rej(error)
       })
   })
 }
@@ -56,7 +60,7 @@ async function getSsProd(prodID) {
   try {
     return result.data;
   } catch (error) {
-    console.log(error);
+    console.log('fail', 1, 'dataRoutes.js - pullSortlyData()', error);
   }
 }
 
@@ -81,13 +85,13 @@ function updateSsProduct(obj) {
       res('updateSsProduct complete')
     })
     .catch(error => {
+      console.log('fail', 1, 'dataRoutes.js - pullSortlyData()', error);
       rej(error)
     })
   })
 }
 
 function removeUpdateTag(product) {
-  console.log('remove tag function')
   let indexTagNames = product.tag_names.indexOf('Update');
 
   if (indexTagNames > -1) {
@@ -110,9 +114,9 @@ function removeUpdateTag(product) {
   }
   
   axios(config)
-  .then(resp => {
-    console.log(`tag removed from sortly product id: ${product.id}`)
-  })
+  // .then(resp => {
+  //   console.log(`tag removed from sortly product id: ${product.id}`)
+  // })
   .catch(error => {
     console.log(error)
   })

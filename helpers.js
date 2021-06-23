@@ -1,5 +1,4 @@
 const fs = require('fs');
-const { formatSsProduct } = require('./orgFunctions');
 const path = require('path');
 
 function getBinNumber(obj) {
@@ -17,13 +16,10 @@ function addProductAdd(product) {
     let newString = [];
     let formattedHeader = ['SKU','Name','WarehouseLocation','WeightOz','Category','Tag1','Tag2','Tag3','Tag4','Tag5','CustomsDescription','CustomsValue','CustomsTariffNo','CustomsCountry','ThumbnailUrl','UPC','FillSKU','Length','Width','Height','UseProductName','Active','ParentSKU','IsReturnable']
     let prodObj = product.params;
-    console.log(Object.keys(prodObj))
-    console.log(Object.entries(prodObj))
   
     fs.readFile('./logs/productAdds.csv', (err, data) => {
       if (err) {rej(err)}
       else {
-        // formattedHeader = data.toString().split(',');
         formattedHeader.forEach(heading => {
           if (Object.keys(prodObj).indexOf(heading) !== -1) {
             Object.entries(prodObj).forEach(entry => {
@@ -64,7 +60,6 @@ function addInventorySKU(product) {
       }
       fs.appendFile('./logs/productInv.csv', '\n' + newString, (err,data) => {
         if (err) {rej(err)};
-        console.log('inventory record added')
         res('addInventorySKU complete')
       });
     })
@@ -82,7 +77,6 @@ function addSortlySKU(entry) {
 }
 
 function destroyFiles() {
-  console.log('running destroy files');
   fs.readdir('./logs', (err, files) => {
     if (err) throw err;
     files.forEach(file => {
@@ -95,7 +89,6 @@ function destroyFiles() {
 };
 
 function remakeFiles() {
-  console.log('running remake files')
   const productRow = ["SKU","Name","WarehouseLocation","WeightOz","Category","Tag1","Tag2","Tag3","Tag4","Tag5","CustomsDescription","CustomsValue","CustomsTariffNo","CustomsCountry","ThumbnailUrl","UPC","FillSKU","Length","Width","Height","UseProductName","Active","ParentSKU","IsReturnable"]
   const invRow = ["SKU","ProductName","Loc1","Loc2","Loc3","Loc4","Stock","ReorderThreshold","Cost"]
 
