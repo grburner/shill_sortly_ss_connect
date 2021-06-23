@@ -53,7 +53,7 @@ function createZipFiles() {
     .then(() => {
       zip.writeZip('./logs/testzip.zip');
       res('./logs/testzip.zip')
-      // getZips(roots)
+      getZips(roots)
     })
   })
 }
