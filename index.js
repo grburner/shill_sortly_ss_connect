@@ -5,50 +5,46 @@ const AdmZip = require('adm-zip');
 
 const app = express();
 
-// const routes = require('./routes');
+const routes = require('./routes');
 const dataRoutes = require('./dataRoutes');
 const zipFiles = require('./zipFiles');
-const { destroyFiles } = require('./helpers');
+const helpers = require('./helpers');
 
 app.use(express.json());
 
 app.get('/ss_get_prod/:prod_id?', async (req, res) => {
   let tagged = false;
   const mainTag = 61635;
-  const resp = await dataRoutes.getSsProd(req.params.prod_id);
+  const resp = await routes.getSsProd(req.params.prod_id);
   let prod_list = resp.products;
   for (i = 0; i < prod_list.length; i++) {
     if (prod_list[i].tags) {
       if (prod_list[i].tags[0].tagId === mainTag) {
         tagged = i;
+        // console.log('tagged');
       }
     }
   };
   if (tagged === false) {
-    // write new tagging function here
-    // routes.tagSsProd(prod_list[0]);
+    routes.tagSsProd(prod_list[0]);
   } else {
+    // console.log('run changes here');
   }
 });
 
 app.get('/ss_prod/:prod_id?', async (req, res) => {
-  const resp = await dataRoutes.getSsProd(req.params.prod_id);
+  const resp = await routes.getSsProd(req.params.prod_id);
   res.send(resp)
 })
 
 app.get('/pull_sortly', (req, res) => {
-  console.log('success', 3, 'index.js - /pull_sortly', `req.hostname = ${req.hostname}`)
   dataRoutes.pullSortlyData()
   .then(() => {
     zipFiles.createZipFiles()
     .then(resp => {
-      console.log('success', 3, 'index.js - /pull_sortly - pullSortlyData()', `into res.download()`)
       res.download(`${resp}`)
-      destroyFiles()
+      helpers.destroyFiles()
     })
-  })
-  .catch(error => {
-    console.log('fail', 1, 'index.js - /pull_sortly - pullSortlyData()', error)
   });
 });
 
