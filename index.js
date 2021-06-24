@@ -44,7 +44,7 @@ app.get('/pull_sortly', (req, res) => {
     .then(resp => {
       res.download(`${resp}`);
       // res.end();
-      //helpers.destroyFiles()
+      helpers.destroyFiles()
     })
   });
 });
