@@ -42,7 +42,8 @@ app.get('/pull_sortly', (req, res) => {
   .then(() => {
     zipFiles.createZipFiles()
     .then(resp => {
-      res.download(`${resp}`)
+      res.download(`${resp}`);
+      // res.end();
       //helpers.destroyFiles()
     })
   });
