@@ -23,9 +23,9 @@ function pullSortlyData() {
   
     try {
       data.forEach(data => {
-        console.log(data)
         data.tags.forEach(tag => {
           if (tag.name === 'Update') {
+            console.log(data.name)
             prodsToUpdate.push(data)
           }
         })
