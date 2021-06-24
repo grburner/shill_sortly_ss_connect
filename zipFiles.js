@@ -26,7 +26,8 @@ async function addToZip(filePath) {
   const bufferData = await readFile(filePath)
 
   try {
-    zip.addFile(filePath, Buffer.alloc(bufferData.length, bufferData))
+    zip.addFile(filePath, Buffer.alloc(bufferData.length, bufferData),'', 0644)
+    //https://github.com/cthackers/adm-zip/issues/171
   } catch {
     console.log(error);
   }
