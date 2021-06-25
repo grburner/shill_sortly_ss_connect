@@ -44,7 +44,7 @@ app.get('/pull_sortly', (req, res) => {
       console.log(resp)
       res.download('./logs/output.zip')
       // res.end();
-      helpers.destroyFiles();
+      // helpers.destroyFiles();
     })
   });
 });
