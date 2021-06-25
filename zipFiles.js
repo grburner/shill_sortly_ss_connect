@@ -1,60 +1,49 @@
 const fs = require('fs');
 const util = require('util');
+const JSZip = require("jszip");
 
 const readDir = util.promisify(fs.readdir);
 const readFile = util.promisify(fs.readFile);
 
-const AdmZip = require('adm-zip');
-const zip = new AdmZip();
-
 let rootPath = './logs/'
 
-async function zipFiles(root) {
-  let roots = []
-  try {
-    const files = await readDir(root);
-    files.forEach(file => {
-      roots.push(`${root}${file}`)
+const zip = new JSZip();
+
+function createZipFiles() {
+  return new Promise (async (res, rej) => {
+    const filePaths = ['productAdds.csv', 'productInv.csv', 'sortlySKU.csv'];
+    let promises = []
+  
+    filePaths.forEach(file => {
+      promises.push(new Promise(async(res, rej) => {
+        const bufferData = await readFile(`${rootPath}${file}`);
+        try {
+          zip.file(file, bufferData);
+          res(true)
+        } catch (error) {
+          console.log(error);
+          rej(error)
+        }
+      }))
     })
-    return roots
-  } catch {
-    console.log(error);
-  }
-}
-
-async function addToZip(filePath) {
-  const bufferData = await readFile(filePath)
-
-  try {
-    zip.addFile(filePath, Buffer.alloc(bufferData.length, bufferData), '')
-    //https://github.com/cthackers/adm-zip/issues/171
-  } catch {
-    console.log(error);
-  }
-}
-
-function getZips(paths) {
-  const zip2 = new AdmZip('./logs/testzip.zip');
-  const zipEntries = zip2.getEntries();
-  zipEntries.forEach(entry => {
-    console.log(entry.entryName)
-    if (paths.includes(entry.entryName)) {
-      console.log(entry.getData().toString('utf8'))
-    }
+    await Promise.all(promises)
+    .then(() => generateZip())
+    .then(() => {res(true)})
   })
 }
 
-function createZipFiles() {
-  return new Promise(async(res, rej) => {
-    let promises = [];
-    const roots = await zipFiles(rootPath);
-    roots.forEach(root => promises.push(addToZip(root)))
-  
-    Promise.all(promises)
-    .then(() => {
-      zip.writeZip('./logs/testzip.zip');
-      res('./logs/testzip.zip')
-      getZips(roots)
+function generateZip() {
+  return new Promise((res, rej) => {
+    zip.generateNodeStream({"type":'nodebuffer', streamFiles:true})
+    .pipe(fs.createWriteStream('./logs/output.zip'))
+    .on('finish', function(error) {
+      if (error) {
+        console.log(error)
+        rej(false)
+      } else { 
+        console.log('output written')
+        res(true)
+      }
     })
   })
 }

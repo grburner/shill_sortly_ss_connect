@@ -1,7 +1,6 @@
 const fs = require('fs');
 
 const express = require('express');
-const AdmZip = require('adm-zip');
 
 const app = express();
 
@@ -42,9 +41,10 @@ app.get('/pull_sortly', (req, res) => {
   .then(() => {
     zipFiles.createZipFiles()
     .then(resp => {
-      res.download(`${resp}`);
+      console.log(resp)
+      res.download('./logs/output.zip')
       // res.end();
-      helpers.destroyFiles()
+      helpers.destroyFiles();
     })
   });
 });

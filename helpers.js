@@ -110,10 +110,6 @@ function remakeFiles() {
   fs.writeFileSync(`./logs/sortlySKU.csv`, '',(err) => {
     if (err) throw err;
   });
-
-  fs.writeFileSync(`./logs/testzip.zip`, '',(err) => {
-    if (err) throw err;
-  });
 }
 
 exports.getBinNumber = getBinNumber;
