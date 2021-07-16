@@ -23,12 +23,10 @@ function pullSortlyData() {
   
     try {
       data.forEach(data => {
-        data.tags.forEach(tag => {
-          if (tag.name === 'Update') {
-            console.log(data.name)
-            prodsToUpdate.push(data)
-          }
-        })
+        if (findTagged(data.custom_attribute_values)) {
+          console.log(data.name)
+          prodsToUpdate.push(data)
+        }
       });
     } catch (error) {
       console.log(error);
@@ -116,6 +114,13 @@ function removeUpdateTag(product) {
   .catch(error => {
     console.log(error)
   })
+}
+
+function findTagged(tags) {
+  const filterTag = tags.filter(tag => tag.custom_attribute_id === 201704)
+  if (filterTag.value === true) {
+    return true;
+  }
 }
 
 
