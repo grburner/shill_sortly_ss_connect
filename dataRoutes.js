@@ -24,7 +24,6 @@ function pullSortlyData() {
     try {
       data.forEach(data => {
         if (findTagged(data.custom_attribute_values)) {
-          console.log(data.name)
           prodsToUpdate.push(data)
         }
       });
@@ -86,16 +85,13 @@ function updateSsProduct(obj) {
 
 function removeUpdateTag(product) {
   console.log('remove tag function')
-  let indexTagNames = product.tag_names.indexOf('Update');
-
-  if (indexTagNames > -1) {
-    product.tag_names.splice(indexTagNames, 1)
-  }
-  product.tags.forEach((tag, index) => {
-    if (Object.values(tag)[0] === 'Update') {
-      product.tags.splice(index, 1)
+  
+  product.custom_attribute_values.forEach(tag => {
+    if (tag.custom_attribute_id === 201704) {
+      tag.value = false
     }
-  });
+  })
+  console.log(product)
 
   const config = {
     method: 'put',
@@ -118,7 +114,8 @@ function removeUpdateTag(product) {
 
 function findTagged(tags) {
   const filterTag = tags.filter(tag => tag.custom_attribute_id === 201704)
-  if (filterTag.value === true) {
+  if (filterTag[0].value === true) {
+    console.log(filterTag)
     return true;
   }
 }

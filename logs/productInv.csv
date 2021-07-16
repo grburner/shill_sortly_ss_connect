@@ -1,1 +1,3 @@
 SKU,ProductName,Loc1,Loc2,Loc3,Loc4,Stock,ReorderThreshold,Cost
+SORT-002,Sortly Test Item update,Bin 515,,,,500,,,
+SORT-004,Sortly test item 2,Bin 600,,,,6,,,
